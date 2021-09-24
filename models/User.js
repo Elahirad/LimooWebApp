@@ -1,4 +1,6 @@
 const validator = require('validator');
+const userCollection = require('../db').db().collection('users')
+const bcrypt = require('bcryptjs');
 
 class User {
     constructor(data) {
@@ -15,7 +17,7 @@ class User {
 
     validate() {
         // Username validation
-        if (this.data.username === "") this.errors.push("You must provide a username !");
+        if (this.data.username === "" || !validator.isAlphanumeric(this.data.username)) this.errors.push("You must provide a username !");
         if (this.data.username.length < 3) this.errors.push("Username must be at least 3 chars !");
         if (this.data.username.length > 10) this.errors.push("Username can be maximum 10 chars !");
 
@@ -30,12 +32,18 @@ class User {
     }
 
     register() {
-        return new Promise((resolve,reject) => {
+        return new Promise((resolve, reject) => {
             this.cleanUp();
             this.validate();
-            if (this.errors.length){
+            if (this.errors.length) {
                 reject(this.errors);
             } else {
+                let salt = bcrypt.genSaltSync(10);
+                userCollection.insertOne({ username: this.data.username, email: this.data.email, password: bcrypt.hashSync(this.data.password, salt)}).then(info => {
+                    resolve(info.insertId);
+                }).catch(e => {
+                    reject(e)
+                });
                 resolve();
             }
         })
