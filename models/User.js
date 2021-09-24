@@ -39,7 +39,11 @@ class User {
                 reject(this.errors);
             } else {
                 let salt = bcrypt.genSaltSync(10);
-                userCollection.insertOne({ username: this.data.username, email: this.data.email, password: bcrypt.hashSync(this.data.password, salt)}).then(info => {
+                userCollection.insertOne({
+                    username: this.data.username,
+                    email: this.data.email,
+                    password: bcrypt.hashSync(this.data.password, salt)
+                }).then(info => {
                     resolve(info.insertId);
                 }).catch(e => {
                     reject(e)
@@ -48,6 +52,21 @@ class User {
             }
         })
 
+    }
+
+    login() {
+        return new Promise((resolve, reject) => {
+            this.cleanUp();
+            userCollection.findOne({username: this.data.username}).then(user => {
+                if (bcrypt.compareSync(this.data.password, user.password)) {
+                    resolve();
+                } else {
+                    reject("Invalid username/password !")
+                }
+            }).catch(() => {
+                reject("Invalid username/password !");
+            })
+        })
     }
 }
 
