@@ -44,7 +44,7 @@ class User {
                     email: this.data.email,
                     password: bcrypt.hashSync(this.data.password, salt)
                 }).then(info => {
-                    resolve(info.insertId);
+                    resolve(info.insertedId);
                 }).catch(e => {
                     reject(e)
                 });

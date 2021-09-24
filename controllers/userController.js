@@ -50,6 +50,17 @@ exports.logout = (req, res) => {
     );
 };
 
+exports.mustBeLoggedIn = (req, res, next) => {
+    if (req.session.user) {
+        next();
+    } else {
+        req.flash('errors', "You must be logged in to perform this action !");
+        req.session.save(() => {
+            res.redirect('/');
+        });
+    }
+};
+
 exports.homePage = (req, res) => {
     if (req.session.user) {
         res.render('home-dashboard');
