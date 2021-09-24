@@ -1,8 +1,13 @@
 const User = require('../models/User');
 exports.register = (req, res) => {
     let user = new User(req.body);
-    user.register().then(() => {
+    user.register().then((id) => {
         req.flash('success', "Register success !");
+        req.session.user = {
+            _id: id,
+            username: req.body.username,
+            email: req.body.email
+        }
         req.session.save(() => {
             res.redirect('/');
         });
@@ -18,7 +23,12 @@ exports.register = (req, res) => {
 
 exports.login = (req, res) => {
     let user = new User(req.body);
-    user.login().then(() => {
+    user.login().then((info) => {
+        req.session.user = {
+            _id: info._id,
+            username: info.username,
+            email: info.password
+        }
         req.flash('success', "Login success !");
         req.session.save(() => {
             res.redirect('/');
@@ -29,6 +39,15 @@ exports.login = (req, res) => {
             res.redirect('/');
         });
     })
+};
+
+exports.logout = (req, res) => {
+    req.session.user = undefined;
+    req.flash("success", "Logged out successfully !");
+    req.session.save(() => {
+            res.redirect('/');
+        }
+    );
 };
 
 exports.homePage = (req, res) => {

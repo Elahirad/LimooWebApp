@@ -59,7 +59,7 @@ class User {
             this.cleanUp();
             userCollection.findOne({username: this.data.username}).then(user => {
                 if (bcrypt.compareSync(this.data.password, user.password)) {
-                    resolve();
+                    resolve(user);
                 } else {
                     reject("Invalid username/password !")
                 }

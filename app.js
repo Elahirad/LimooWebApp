@@ -22,13 +22,17 @@ app.use(sessionOptions);
 app.use(express.json())
 app.use(flash());
 app.use(express.urlencoded({extended: false}));
+app.set('views', 'views');
+app.set('view engine', 'ejs');
 app.use((req, res, next) => {
+
+    // Making session data available on ejs templates
+    res.locals.user = req.session.user;
+    // Making flash messages available on ejs templates
     res.locals.success = req.flash('success');
     res.locals.errors = req.flash('errors');
     next();
 })
 app.use('/', router);
 app.use(express.static('public'));
-app.set('views', 'views');
-app.set('view engine', 'ejs');
 module.exports = app;
