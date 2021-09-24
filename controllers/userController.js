@@ -51,5 +51,9 @@ exports.logout = (req, res) => {
 };
 
 exports.homePage = (req, res) => {
-    res.render('home-guest');
+    if (req.session.user) {
+        res.render('home-dashboard');
+    } else {
+        res.render('home-guest');
+    }
 };
