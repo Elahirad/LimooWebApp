@@ -1,4 +1,6 @@
 const User = require('../models/User');
+
+// Managing POST request for registeration
 exports.register = (req, res) => {
     let user = new User(req.body);
     user.register().then((id) => {
@@ -21,6 +23,7 @@ exports.register = (req, res) => {
     })
 };
 
+// Managing POST request for login screen
 exports.login = (req, res) => {
     let user = new User(req.body);
     user.login().then((info) => {
@@ -41,6 +44,7 @@ exports.login = (req, res) => {
     })
 };
 
+// Managing POST request for logging out
 exports.logout = (req, res) => {
     req.session.user = undefined;
     req.flash("success", "Logged out successfully !");
@@ -50,6 +54,7 @@ exports.logout = (req, res) => {
     );
 };
 
+// Checking user to be logged in
 exports.mustBeLoggedIn = (req, res, next) => {
     if (req.session.user) {
         next();
@@ -61,6 +66,7 @@ exports.mustBeLoggedIn = (req, res, next) => {
     }
 };
 
+// Rendering home page
 exports.homePage = (req, res) => {
     if (req.session.user) {
         res.render('home-dashboard');

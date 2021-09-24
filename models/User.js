@@ -38,12 +38,14 @@ class User {
             if (this.errors.length) {
                 reject(this.errors);
             } else {
+                // Password should be hashed using bcryptjs module
                 let salt = bcrypt.genSaltSync(10);
                 userCollection.insertOne({
                     username: this.data.username,
                     email: this.data.email,
                     password: bcrypt.hashSync(this.data.password, salt)
                 }).then(info => {
+                    // Resolving registered user's _id
                     resolve(info.insertedId);
                 }).catch(e => {
                     reject(e)
@@ -58,6 +60,7 @@ class User {
         return new Promise((resolve, reject) => {
             this.cleanUp();
             userCollection.findOne({username: this.data.username}).then(user => {
+                // Using bcryptjs to compare string with hash
                 if (bcrypt.compareSync(this.data.password, user.password)) {
                     resolve(user);
                 } else {
