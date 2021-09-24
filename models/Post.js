@@ -3,9 +3,10 @@ const ObjectID = require('mongodb').ObjectID;
 const sanitizeHTML = require('sanitize-html');
 
 class Post {
-    constructor(data) {
+    constructor(data, authorId) {
         this.data = data;
         this.errors = [];
+        this.authorId = authorId;
     }
 
     cleanUp() {
@@ -13,7 +14,9 @@ class Post {
         if (typeof (this.data.body) !== "string") this.data.body = "";
         this.data = {
             title: sanitizeHTML(this.data.title, {allowedTags: [], allowedAttributes: {}}),
-            body: sanitizeHTML(this.data.body, {allowedTags: [], allowedAttributes: {}})
+            body: sanitizeHTML(this.data.body, {allowedTags: [], allowedAttributes: {}}),
+            authorId: new ObjectID(this.authorId),
+            createdDate: new Date()
         };
     }
 
@@ -41,12 +44,31 @@ class Post {
 
 }
 
-Post.fetchSinglePost = (postId) => {
+Post.fetchSinglePost = (postId, visitorId) => {
     return new Promise((resolve, reject) => {
         postsCollection.findOne({_id: new ObjectID(postId)}).then(info => {
-            resolve(info);
+            let isVisitorOwner = info.authorId.equals(visitorId);
+            let post = {
+                _id: info._id,
+                title: info.title,
+                body: info.body,
+                authorId: info.authorId,
+                createdDate: info.createdDate,
+                isVisitorOwner: isVisitorOwner
+            };
+            resolve(post);
         }).catch(e => {
             reject(e);
+        });
+    });
+};
+
+Post.delete = (postId) => {
+    return new Promise((resolve, reject) => {
+        postsCollection.deleteOne({ _id: postId }).then(() => {
+            resolve();
+        }).catch(() => {
+            reject()
         });
     });
 };
