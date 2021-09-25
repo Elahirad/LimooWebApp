@@ -54,17 +54,12 @@ class User {
             } else {
                 // Password should be hashed using bcryptjs module
                 let salt = bcrypt.genSaltSync(10);
-                userCollection.insertOne({
+                let info = await userCollection.insertOne({
                     username: this.data.username,
                     email: this.data.email,
                     password: bcrypt.hashSync(this.data.password, salt)
-                }).then(info => {
-                    // Resolving registered user's _id
-                    resolve(info.insertedId);
-                }).catch(e => {
-                    reject(e)
                 });
-                resolve();
+                resolve(info);
             }
         })
 

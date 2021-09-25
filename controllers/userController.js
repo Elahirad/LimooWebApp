@@ -4,10 +4,10 @@ const Follow = require('../models/Follow');
 // Managing POST request for registeration
 exports.register = (req, res) => {
     let user = new User(req.body, true);
-    user.register().then((id) => {
+    user.register().then((inf) => {
         req.flash('success', "Register success !");
         req.session.user = {
-            _id: id,
+            _id: inf.insertedId,
             username: req.body.username,
             email: req.body.email,
             avatar: user.avatar

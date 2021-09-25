@@ -6,7 +6,7 @@
     <div class="list-group">
         <% posts.forEach(post => { %>
             <a href="/post/<%= post._id %>" class="list-group-item list-group-item-action">
-                <img class="avatar-tiny" src="<%= user.avatar %>">
+                <img class="avatar-tiny" src="<%= t_user.avatar %>">
                     <strong><%= post.title %></strong> on <%= post.createdDate.getMonth() + 1 %>/<%= post.createdDate.getDay() %>/<%= post.createdDate.getFullYear() %>
             </a>
         <% }) %>

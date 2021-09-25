@@ -3,15 +3,14 @@ const {ObjectID} = require("mongodb");
 const followsCollection = require('../db').db().collection('follows');
 
 class Follow {
-    constructor(data, visitorId) {
+    constructor(data) {
         this.data = data;
         this.errors = [];
-        this.visitorId = visitorId;
     }
 
     validate(op) {
         return new Promise(async (resolve, reject) => {
-            let user = await User.searchByUsername(this.data.followedUsername,this.visitorId);
+            let user = await User.searchByUsername(this.data.followedUsername);
             if (user._id.equals(this.data.followerId)) this.errors.push("You can not follow yourself !");
             if (!user) this.errors.push("This user doesn't exists !");
             this.data = {
@@ -94,6 +93,7 @@ Follow.fetchFollowers = (id) => {
                 }
             }
         ]).toArray();
+        console.log(follows);
         let followers = follows.map(follow => {
             follow = {
                 username: follow.follower.username,
