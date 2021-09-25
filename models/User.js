@@ -125,10 +125,18 @@ class User {
 
 }
 
-User.searchByUsername = username => {
+User.searchByUsername = (username, visitorId) => {
     return new Promise(async (resolve, reject) => {
         try {
             let user = await userCollection.findOne({username: username});
+            if (visitorId === undefined) visitorId = "";
+            let isVisitorOwner = user._id.equals(visitorId);
+            user = {
+                _id: user._id,
+                username: user.username,
+                email: user.email,
+                isVisitorOwner: isVisitorOwner
+            }
             resolve(user);
         } catch (e) {
             reject(e);

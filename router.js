@@ -8,7 +8,9 @@ router.get('/', userController.homePage);
 router.post('/register', userController.register);
 router.post('/login', userController.login);
 router.post('/logout', userController.logout);
-router.get('/user/:username', userController.mustBeLoggedIn,followController.checkFollow, userController.getCounts,userController.viewUserPosts);
+router.get('/user/:username', userController.mustBeLoggedIn, followController.checkFollow, userController.getCounts, userController.viewUserPosts);
+router.get('/user/:username/followers', userController.mustBeLoggedIn, followController.checkFollow, userController.getCounts, followController.viewUserFollowers);
+router.get('/user/:username/followings', userController.mustBeLoggedIn, followController.checkFollow, userController.getCounts, followController.viewUserFollowings);
 router.post('/addFollow/:username', userController.mustBeLoggedIn, followController.create);
 router.post('/removeFollow/:username', userController.mustBeLoggedIn, followController.remove);
 

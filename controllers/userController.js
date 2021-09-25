@@ -33,7 +33,7 @@ exports.login = (req, res) => {
             _id: info._id,
             username: info.username,
             email: info.email,
-            avatar: new User({ email: info.email }).getAvatar()
+            avatar: new User({email: info.email}).getAvatar()
         }
         req.flash('success', "Login success !");
         req.session.save(() => {
@@ -71,9 +71,9 @@ exports.mustBeLoggedIn = (req, res, next) => {
 
 // Getting post/follower/following count
 exports.getCounts = async (req, res, next) => {
-    let postsPromise = Post.postsCountByUsername(req.params.username);
-    let followingPromise = Follow.followingCount(req.params.username);
-    let followerPromise = Follow.followerCount(req.params.username);
+    let postsPromise = Post.postsCount(req.user._id);
+    let followingPromise = Follow.followingCount(req.user._id);
+    let followerPromise = Follow.followerCount(req.user._id);
     let [postsCount, followingCount, followerCount] = await Promise.all([postsPromise, followingPromise, followerPromise]);
     req.postsCount = postsCount;
     req.followingCount = followingCount;
@@ -82,24 +82,20 @@ exports.getCounts = async (req, res, next) => {
 };
 
 
-
 // Showing user posts
 exports.viewUserPosts = async (req, res) => {
-    let user = await User.searchByUsername(req.params.username);
-    let posts = await Post.fetchPostsByAuthor(user._id);
-    if (user) {
-        let avatar = new User({ email: user.email }).getAvatar();
-        res.render('user-posts', {
-            user: {...user, avatar: avatar},
-            posts:posts,
-            followed: req.followed,
-            postsCount: req.postsCount,
-            followingCount: req.followingCount,
-            followerCount: req.followerCount
-        });
-    } else {
-        res.render('404');
-    }
+    let posts = await Post.fetchPostsByAuthor(req.user._id);
+    let avatar = new User({email: req.user.email}).getAvatar();
+    res.render('user-posts', {
+        t_user: {...req.user, avatar: avatar},
+        posts: posts,
+        followed: req.followed,
+        postsCount: req.postsCount,
+        followingCount: req.followingCount,
+        followerCount: req.followerCount,
+        isVisitorOwner: req.user.isVisitorOwner,
+        page:"posts"
+    });
 };
 
 // Rendering home page

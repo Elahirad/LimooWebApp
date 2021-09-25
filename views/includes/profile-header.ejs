@@ -1,20 +1,21 @@
-<h2><img class="avatar-small" src="<%= user.avatar %>"> <%= user.username %>
-
-    <% if(followed) { %>
-        <form class="ml-2 d-inline" action="/removeFollow/<%= user.username %>" method="POST">
-            <button class="btn btn-danger btn-sm">Unfollow <i class="fas fa-user-times"></i></button>
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        </form>
-    <% } else { %>
-        <form class="ml-2 d-inline" action="/addFollow/<%= user.username %>" method="POST">
-            <button class="btn btn-primary btn-sm">Follow <i class="fas fa-user-plus"></i></button>
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        </form>
+<h2><img class="avatar-small" src="<%= t_user.avatar %>"> <%= t_user.username %>
+    <% if(!t_user.isVisitorOwner) { %>
+        <% if(followed) { %>
+            <form class="ml-2 d-inline" action="/removeFollow/<%= t_user.username %>" method="POST">
+                <button class="btn btn-danger btn-sm">Unfollow <i class="fas fa-user-times"></i></button>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            </form>
+        <% } else { %>
+            <form class="ml-2 d-inline" action="/addFollow/<%= t_user.username %>" method="POST">
+                <button class="btn btn-primary btn-sm">Follow <i class="fas fa-user-plus"></i></button>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            </form>
+        <% } %>
     <% } %>
 </h2>
 
 <div class="profile-nav nav nav-tabs pt-2 mb-4">
-    <a href="#" class="profile-nav-link nav-item nav-link active">Posts: <%= postsCount %></a>
-    <a href="#" class="profile-nav-link nav-item nav-link ">Followers: <%= followerCount %></a>
-    <a href="#" class="profile-nav-link nav-item nav-link ">Following: <%= followingCount %></a>
+    <a href="/user/<%= t_user.username %>" class="profile-nav-link nav-item nav-link <%= page==='posts' ? 'active' : '' %>">Posts: <%= postsCount %></a>
+    <a href="/user/<%= t_user.username %>/followers" class="profile-nav-link nav-item nav-link <%= page==='followers' ? 'active' : '' %>">Followers: <%= followerCount %></a>
+    <a href="/user/<%= t_user.username %>/followings" class="profile-nav-link nav-item nav-link <%= page==='followings' ? 'active' : '' %>">Following: <%= followingCount %></a>
 </div>

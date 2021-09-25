@@ -135,10 +135,9 @@ Post.delete = (postId) => {
     });
 };
 
-Post.postsCountByUsername = (username) => {
+Post.postsCount = (id) => {
     return new Promise(async (resolve, reject) => {
-        let user = await User.searchByUsername(username);
-        let count = await postsCollection.countDocuments({ authorId: user._id });
+        let count = await postsCollection.countDocuments({ authorId: id });
         resolve(count);
     });
 };
