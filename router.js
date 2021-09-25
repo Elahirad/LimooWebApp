@@ -7,6 +7,7 @@ router.get('/', userController.homePage);
 router.post('/register', userController.register);
 router.post('/login', userController.login);
 router.post('/logout', userController.logout);
+router.get('/user/:username', userController.mustBeLoggedIn, userController.viewUserPosts);
 
 // Post related routes
 router.get('/create-post', userController.mustBeLoggedIn, postController.createPostPage);

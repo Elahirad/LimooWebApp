@@ -1,5 +1,5 @@
 const User = require('../models/User');
-
+const Post = require('../models/Post');
 // Managing POST request for registeration
 exports.register = (req, res) => {
     let user = new User(req.body, true);
@@ -31,8 +31,8 @@ exports.login = (req, res) => {
         req.session.user = {
             _id: info._id,
             username: info.username,
-            email: info.password,
-            avatar: user.avatar
+            email: info.email,
+            avatar: new User({ email: info.email }).getAvatar()
         }
         req.flash('success', "Login success !");
         req.session.save(() => {
@@ -65,6 +65,18 @@ exports.mustBeLoggedIn = (req, res, next) => {
         req.session.save(() => {
             res.redirect('/');
         });
+    }
+};
+
+// Showing user posts
+exports.viewUserPosts = async (req, res) => {
+    let user = await User.searchByUsername(req.params.username);
+    let posts = await Post.fetchPostsByAuthor(user._id);
+    if (user) {
+        let avatar = new User({ email: user.email }).getAvatar();
+        res.render('user-posts', { user: {...user, avatar: avatar}, posts:posts });
+    } else {
+        res.render('404');
     }
 };
 

@@ -4,10 +4,9 @@ const bcrypt = require('bcryptjs');
 const md5 = require('md5');
 
 class User {
-    constructor(data, getsAvatar) {
+    constructor(data) {
         this.data = data;
         this.errors = [];
-        this.getsAvatar = getsAvatar;
         this.avatar = "";
     }
 
@@ -16,7 +15,6 @@ class User {
         if (typeof (this.data.username) != "string") this.data.username = "";
         if (typeof (this.data.email) != "string") this.data.email = "";
         if (typeof (this.data.password) != "string") this.data.password = "";
-        if (this.getsAvatar !== undefined) this.getAvatar();
     }
 
     validate() {
@@ -50,7 +48,7 @@ class User {
         return new Promise(async (resolve, reject) => {
             this.cleanUp();
             await this.validate();
-            console.log(this.errors);
+            this.getAvatar();
             if (this.errors.length) {
                 reject(this.errors);
             } else {
@@ -90,12 +88,13 @@ class User {
 
     getAvatar() {
         this.avatar = `https://s.gravatar.com/avatar/${md5(this.data.email)}?s=128`
+        return this.avatar;
     }
 
     doesEmailExist() {
         return new Promise(async (resolve, reject) => {
             try {
-                let user = await userCollection.findOne({ email: this.data.email });
+                let user = await userCollection.findOne({email: this.data.email});
                 if (user) {
                     resolve(true);
                 } else {
@@ -111,7 +110,7 @@ class User {
     doesUsernameExist() {
         return new Promise(async (resolve, reject) => {
             try {
-                let user = await userCollection.findOne({ username: this.data.username });
+                let user = await userCollection.findOne({username: this.data.username});
                 if (user) {
                     resolve(true);
                 } else {
@@ -124,6 +123,17 @@ class User {
         });
     }
 
+}
+
+User.searchByUsername = username => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let user = await userCollection.findOne({username: username});
+            resolve(user);
+        } catch (e) {
+            reject(e);
+        }
+    });
 }
 
 module.exports = User;

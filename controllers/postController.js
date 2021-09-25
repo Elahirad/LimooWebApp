@@ -107,9 +107,6 @@ exports.viewSingle = (req, res) => {
             });
         }
     }).catch(err => {
-        req.flash('errors', "Post not found !");
-        req.session.save(() => {
-            res.redirect('/');
-        });
+        res.render('404');
     });
 };
