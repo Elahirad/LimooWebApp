@@ -1,13 +1,16 @@
 const router = require('express').Router();
 const userController = require('./controllers/userController');
 const postController = require('./controllers/postController');
+const followController = require('./controllers/followController');
 router.get('/', userController.homePage);
 
 // User realted routes
 router.post('/register', userController.register);
 router.post('/login', userController.login);
 router.post('/logout', userController.logout);
-router.get('/user/:username', userController.mustBeLoggedIn, userController.viewUserPosts);
+router.get('/user/:username', userController.mustBeLoggedIn,followController.checkFollow, userController.getCounts,userController.viewUserPosts);
+router.post('/addFollow/:username', userController.mustBeLoggedIn, followController.create);
+router.post('/removeFollow/:username', userController.mustBeLoggedIn, followController.remove);
 
 // Post related routes
 router.get('/create-post', userController.mustBeLoggedIn, postController.createPostPage);

@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Post = require('../models/Post');
+const Follow = require('../models/Follow');
 // Managing POST request for registeration
 exports.register = (req, res) => {
     let user = new User(req.body, true);
@@ -68,13 +69,34 @@ exports.mustBeLoggedIn = (req, res, next) => {
     }
 };
 
+// Getting post/follower/following count
+exports.getCounts = async (req, res, next) => {
+    let postsPromise = Post.postsCountByUsername(req.params.username);
+    let followingPromise = Follow.followingCount(req.params.username);
+    let followerPromise = Follow.followerCount(req.params.username);
+    let [postsCount, followingCount, followerCount] = await Promise.all([postsPromise, followingPromise, followerPromise]);
+    req.postsCount = postsCount;
+    req.followingCount = followingCount;
+    req.followerCount = followerCount;
+    next();
+};
+
+
+
 // Showing user posts
 exports.viewUserPosts = async (req, res) => {
     let user = await User.searchByUsername(req.params.username);
     let posts = await Post.fetchPostsByAuthor(user._id);
     if (user) {
         let avatar = new User({ email: user.email }).getAvatar();
-        res.render('user-posts', { user: {...user, avatar: avatar}, posts:posts });
+        res.render('user-posts', {
+            user: {...user, avatar: avatar},
+            posts:posts,
+            followed: req.followed,
+            postsCount: req.postsCount,
+            followingCount: req.followingCount,
+            followerCount: req.followerCount
+        });
     } else {
         res.render('404');
     }

@@ -135,4 +135,12 @@ Post.delete = (postId) => {
     });
 };
 
+Post.postsCountByUsername = (username) => {
+    return new Promise(async (resolve, reject) => {
+        let user = await User.searchByUsername(username);
+        let count = await postsCollection.countDocuments({ authorId: user._id });
+        resolve(count);
+    });
+};
+
 module.exports = Post;
