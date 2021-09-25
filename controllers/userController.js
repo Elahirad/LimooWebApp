@@ -2,13 +2,14 @@ const User = require('../models/User');
 
 // Managing POST request for registeration
 exports.register = (req, res) => {
-    let user = new User(req.body);
+    let user = new User(req.body, true);
     user.register().then((id) => {
         req.flash('success', "Register success !");
         req.session.user = {
             _id: id,
             username: req.body.username,
-            email: req.body.email
+            email: req.body.email,
+            avatar: user.avatar
         }
         req.session.save(() => {
             res.redirect('/');
@@ -25,12 +26,13 @@ exports.register = (req, res) => {
 
 // Managing POST request for login screen
 exports.login = (req, res) => {
-    let user = new User(req.body);
+    let user = new User(req.body, true);
     user.login().then((info) => {
         req.session.user = {
             _id: info._id,
             username: info.username,
-            email: info.password
+            email: info.password,
+            avatar: user.avatar
         }
         req.flash('success', "Login success !");
         req.session.save(() => {
@@ -59,7 +61,7 @@ exports.mustBeLoggedIn = (req, res, next) => {
     if (req.session.user) {
         next();
     } else {
-        req.flash('errors', "You must be logged in to perform this action !");
+        req.flash('errors', "You must be logged in to perform this action !!");
         req.session.save(() => {
             res.redirect('/');
         });
