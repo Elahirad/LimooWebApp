@@ -110,3 +110,14 @@ exports.viewSingle = (req, res) => {
         res.render('404');
     });
 };
+
+exports.searchByText = (req, res) => {
+    Post.searchByText(req.body.text)
+        .then(posts => {
+            res.json(posts);
+            // console.log(posts);
+        })
+        .catch(e => {
+            res.json("Error occured");
+        });
+};
