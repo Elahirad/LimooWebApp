@@ -19,7 +19,7 @@
     <p class="text-muted small mb-4">
         <a href="/user/<%= post.author.username %>"><img class="avatar-tiny"
                          src="<%= post.author.avatar %>"></a>
-        Posted by <a href="#"><%= post.author.username %></a> on <%= post.createdDate.getMonth() + 1 %>/<%= post.createdDate.getDay() %>/<%= post.createdDate.getFullYear() %></p>
+        Posted by <a href="/user/<%= post.author.username %>"><%= post.author.username %></a> on <%= post.createdDate.getMonth() + 1 %>/<%= post.createdDate.getDay() %>/<%= post.createdDate.getFullYear() %></p>
 
     <div class="body-content">
         <%= post.body %>
