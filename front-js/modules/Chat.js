@@ -1,7 +1,7 @@
 export default class Chat {
   constructor() {
     this.chatIcon = document.querySelector(".header-chat-icon");
-    this.socket = io();
+    this.socket;
     this.events();
   }
 
@@ -9,13 +9,14 @@ export default class Chat {
 
   events() {
     this.chatIcon.addEventListener("click", (e) => {
-        this.handleChat();
+      this.handleChat();
     });
   }
 
   // Methods
 
   handleChat() {
-      console.log("Chat opened");
+    if (this.socket == undefined) this.socket = io();
+    console.log("Chat opened");
   }
 }
