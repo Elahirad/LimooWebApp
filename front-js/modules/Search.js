@@ -7,6 +7,7 @@ export default class Search {
     this.inputField = document.querySelector("#live-search-field");
     this.loadingCircle = document.querySelector(".circle-loader");
     this.csrfToken = document.querySelector("[name=_csrf]");
+    this.resultArea = document.querySelector(".live-search-results");
     this.timeout;
     this.events();
   }
@@ -14,7 +15,10 @@ export default class Search {
   // Events
   events() {
     this.search_icon.addEventListener("click", (e) => {
+      this.inputField.value = "";
+      this.hideResults();
       this.showOverlay();
+      setTimeout(() => this.inputField.focus(), 50);
     });
 
     this.close_button.addEventListener("click", (e) => {
@@ -37,8 +41,8 @@ export default class Search {
   }
 
   handleSearch = () => {
+    this.hideResults();
     this.showLoadingCircle();
-    console.log("Started ...");
     axios
       .post("/api/searchPost", {
         text: this.inputField.value,
@@ -46,7 +50,7 @@ export default class Search {
       })
       .then((result) => {
         this.hideLoadingCircle();
-        console.log(result);
+        this.showResults(result.data);
       });
   };
 
@@ -56,5 +60,36 @@ export default class Search {
 
   hideLoadingCircle() {
     this.loadingCircle.classList.remove("circle-loader--visible");
+  }
+
+  showResults(data) {
+    this.resultArea.innerHTML = `<div class="list-group shadow-sm">
+    <div class="list-group-item active"><strong>Search Results</strong> (${
+      data.length
+    } items found)</div>
+    ${data
+      .map(
+        (post) => `<a href="/post/${
+          post._id
+        }" class="list-group-item list-group-item-action">
+    <img class="avatar-tiny" src="${post.avatar}"> <strong>${
+          post.title
+        }</strong>
+    <span class="text-muted small">by ${post.author} on ${new Date(
+          post.createdDate
+        ).getDay()}/${new Date(post.createdDate).getMonth() + 1}/${new Date(
+          post.createdDate
+        ).getFullYear()}</span>
+  </a>`
+      )
+      .join("")}
+    
+  </div>`;
+    this.resultArea.classList.add("live-search-results--visible");
+  }
+
+  hideResults() {
+    this.resultArea.innerHTML = "";
+    this.resultArea.classList.remove("live-search-results--visible");
   }
 }

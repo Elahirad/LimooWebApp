@@ -166,12 +166,40 @@ Post.postsCount = (id) => {
 Post.searchByText = (text) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const posts = await postsCollection.aggregate([
-        {
-          $match: { $text: { $search: text } },
-        },
-      ]);
-      resolve(await posts.toArray());
+      let posts = await postsCollection
+        .aggregate([
+          { $match: { $text: { $search: text } } },
+          {
+            $lookup: {
+              from: "users",
+              localField: "authorId",
+              foreignField: "_id",
+              as: "author_doc",
+            },
+          },
+          {
+            $project: {
+              title: 1,
+              author: { $arrayElemAt: ["$author_doc.username", 0] },
+              author_email: { $arrayElemAt: ["$author_doc.email", 0] },
+              createdDate: 1,
+            },
+          },
+        ])
+        .toArray();
+      posts = posts.map((post) => {
+        let avatar = new User({ email: post.author_email }).getAvatar();
+        post = {
+          _id: post._id,
+          title: post.title,
+          author: post.author,
+          avatar,
+          createdDate: post.createdDate,
+        };
+        return post;
+      });
+
+      resolve(posts);
     } catch (e) {
       reject(e);
     }
