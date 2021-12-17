@@ -7,7 +7,7 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const csrf = require("csurf");
 const httpServer = require("http").Server(app);
-const io = require("socket.io")(httpServer);
+require('./chat')(httpServer);
 const sessionOptions = session({
   store: new MongoStore({
     mongoUrl: process.env.CONNECTIONSTRING,
@@ -52,7 +52,4 @@ app.use((err, req, res, next) => {
 });
 app.use("/", router);
 app.use(express.static("public"));
-io.on("connection", (socket) => {
-  console.log("Client Connected ...");
-});
 module.exports = httpServer;
