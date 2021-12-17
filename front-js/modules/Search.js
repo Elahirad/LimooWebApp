@@ -63,10 +63,12 @@ export default class Search {
   }
 
   showResults(data) {
+    let count = "";
+    if (data.length == 0) count = "No items found";
+    else if (data.length == 1) count = "an item found";
+    else count = `${data.length} item's found`;
     this.resultArea.innerHTML = `<div class="list-group shadow-sm">
-    <div class="list-group-item active"><strong>Search Results</strong> (${
-      data.length
-    } items found)</div>
+    <div class="list-group-item active"><strong>Search Results</strong> (${count})</div>
     ${data
       .map(
         (post) => `<a href="/post/${
